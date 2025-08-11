@@ -1,4 +1,15 @@
-flask
+fastapi
+uvicorn[standard]
+psycopg2-binary
+SQLAlchemy
+geoalchemy2
 pandas
 numpy
-plotly
+scikit-learn
+xgboost
+pydantic
+python-dotenv
+shapely
+geopandas
+rtree
+# tick or hawkes libs can be added later
