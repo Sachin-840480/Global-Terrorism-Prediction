@@ -9,6 +9,9 @@ __pycache__/
 # Backup
 backup
 
+# dataset
+data/
+
 # Distribution / packaging
 .Python
 build/
