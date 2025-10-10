@@ -7,8 +7,8 @@ export default function Slider(){
   const update = (v)=>{
     setHorizon(v)
     axios.get(`/api/predict?horizon_days=${v}`).then(res=>{
-      // in real app push GeoJSON to map source
       console.log('pred', res.data)
+      // In full implementation, we'd set map source data here (mapRef passed via context or external state)
     })
   }
 

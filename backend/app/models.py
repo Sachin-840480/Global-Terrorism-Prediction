@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, Date, Table
+from sqlalchemy import Column, Integer, Float, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
 

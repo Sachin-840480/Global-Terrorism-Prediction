@@ -20,7 +20,6 @@ export default function Map(){
 
   useEffect(()=>{
     if(!mapObj) return
-    // fetch initial events
     axios.get('/api/events').then(res=>{
       if(res.data && res.data.type==='FeatureCollection'){
         if(mapObj.getSource('events')){
