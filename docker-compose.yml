@@ -1,21 +1,21 @@
----
-
 ## docker-compose.yml
-
 version: '3.8'
 services:
   db:
-    image: postgis/postgis:15-3.3
+    image: postgis/postgis:18-3.6
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: terror
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   backend:
-    build: ./backend
+    build:
+      context: .                  # project root as context
+      dockerfile: backend/Dockerfile
     env_file: .env
     volumes:
       - ./data:/data
@@ -23,6 +23,7 @@ services:
       - db
     ports:
       - "8000:8000"
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
@@ -31,6 +32,7 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   db-data:
