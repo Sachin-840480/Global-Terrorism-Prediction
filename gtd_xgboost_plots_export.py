@@ -80,7 +80,7 @@ ax.set_title("Most Active Terrorist Organizations")
 ax.set_xlabel("Number of Attacks")
 ax.set_ylabel("Terrorist Organization")
 ax.margins(x=0.01, y=0.01) 
-save_chart(fig, "Most Active Terrorist Organizations")
+save_chart(fig, "most_active_terrorist_organizations")
 
 # 5️⃣ Avg casualties
 casualties = df.groupby('attacktype1_txt')['total_casualties'].mean().sort_values(ascending=False).head(10)
