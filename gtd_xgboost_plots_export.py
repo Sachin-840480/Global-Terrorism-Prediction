@@ -33,7 +33,7 @@ cols = [
     'iyear', 'imonth', 'country_txt', 'region_txt',
     'region', 'country', 'latitude', 'longitude',
     'attacktype1', 'attacktype1_txt', 'targtype1', 'targtype1_txt',
-    'weaptype1', 'weaptype1_txt', 'success', 'nkill', 'nwound'
+    'weaptype1', 'weaptype1_txt', 'gname','success', 'nkill', 'nwound'
 ]
 df = pd.read_csv(DATA_PATH, usecols=cols, encoding='ISO-8859-1', low_memory=False)
 
@@ -72,7 +72,17 @@ ax.set_title("Most Common Attack Types")
 ax.set_xlabel("Frequency"); ax.set_ylabel("Attack Type")
 save_chart(fig, "attack_types")
 
-# 4️⃣ Avg casualties
+# 4️⃣ Terrorist Groups
+group_counts = (df[df['gname'] != 'Unknown']['gname'].value_counts().head(50))
+fig, ax = plt.subplots(figsize=(14, 10))
+sns.barplot(y=group_counts.index, x=group_counts.values, palette='viridis', ax=ax)
+ax.set_title("Most Active Terrorist Organizations")
+ax.set_xlabel("Number of Attacks")
+ax.set_ylabel("Terrorist Organization")
+ax.margins(x=0.01, y=0.01) 
+save_chart(fig, "Most Active Terrorist Organizations")
+
+# 5️⃣ Avg casualties
 casualties = df.groupby('attacktype1_txt')['total_casualties'].mean().sort_values(ascending=False).head(10)
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=casualties.values, y=casualties.index, palette='coolwarm', ax=ax, legend=False)
@@ -80,7 +90,7 @@ ax.set_title("Average Casualties per Attack Type")
 ax.set_xlabel("Average Casualties"); ax.set_ylabel("Attack Type")
 save_chart(fig, "avg_casualties_per_attack_type")
 
-# 5️⃣ Regional Trends
+# 6️⃣ Regional Trends
 region_trends = df.groupby(['iyear', 'region_txt']).size().unstack(fill_value=0)
 fig, ax = plt.subplots(figsize=(14, 7))
 region_trends.plot(ax=ax, linewidth=1.5)
@@ -88,14 +98,14 @@ ax.set_title("Regional Terrorism Trends (1970–2020)")
 ax.set_xlabel("Year"); ax.set_ylabel("Number of Attacks")
 save_chart(fig, "regional_trends")
 
-# 6️⃣ Correlation Heatmap
+# 7️⃣ Correlation Heatmap
 fig, ax = plt.subplots(figsize=(8, 5))
 sns.heatmap(df[['nkill', 'nwound', 'total_casualties']].corr(),
             annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
 ax.set_title("Correlation Between Casualty Variables")
 save_chart(fig, "casualty_correlation")
 
-# 7️⃣ Weapon Type Distribution
+# 8️⃣ Weapon Type Distribution
 weapon_counts = df['weaptype1_txt'].value_counts().head(7)
 fig, ax = plt.subplots(figsize=(12, 9))
 colors = sns.color_palette('Paired', n_colors=len(weapon_counts))

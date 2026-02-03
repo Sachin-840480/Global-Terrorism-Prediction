@@ -71,7 +71,7 @@ def load_data_local(path=DATA_PATH):
         'iyear', 'imonth', 'country_txt', 'region_txt',
         'region', 'country', 'latitude', 'longitude',
         'attacktype1', 'attacktype1_txt', 'targtype1', 'targtype1_txt',
-        'weaptype1', 'weaptype1_txt', 'success', 'nkill', 'nwound'
+        'weaptype1', 'weaptype1_txt', 'gname','success', 'nkill', 'nwound',
     ]
     df = pd.read_csv(path, usecols=cols, encoding='ISO-8859-1', low_memory=False)
     df['nkill'] = df['nkill'].fillna(0)
@@ -451,6 +451,18 @@ if STREAMLIT:
         ax.set_title("Most Common Attack Types")
         ax.set_xlabel("Frequency")
         ax.set_ylabel("Attack Type")
+        st.pyplot(fig)
+
+        st.markdown("### Top 50 Terrorist Organizations by Number of Attacks")
+        # Terrorist Groups
+        group_counts = (df[df['gname'] != 'Unknown']['gname'].value_counts().head(50))  # Exclude 'Unknown' to focus on identified groups
+        # fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(14, 10))
+        sns.barplot(y=group_counts.index, x=group_counts.values, palette='viridis', ax=ax)
+        ax.set_title("Most Active Terrorist Organizations")
+        ax.set_xlabel("Number of Attacks")
+        ax.set_ylabel("Terrorist Organization")
+        ax.margins(x=0.01, y=0.01) 
         st.pyplot(fig)
 
         st.markdown("### Average Casualties by Attack Type")
