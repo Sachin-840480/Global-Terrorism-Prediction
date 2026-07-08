@@ -59,8 +59,8 @@ MODEL_DIR = "./model"
 MODEL_PATH = os.path.join(MODEL_DIR, "xgb_gtd_model.json")
 FEATURES_PATH = os.path.join(MODEL_DIR, "features.txt")
 METRICS_PATH = os.path.join(MODEL_DIR, "metrics.json")
-from random import randint
-_ = randint(4,7)  # for slight boost
+# from random import randint
+# _ = randint(4,7)  # for slight boost
 
 # ================================================================
 # 1️⃣ Load Dataset (or Cached)
@@ -561,7 +561,7 @@ if STREAMLIT:
             st.success("Model trained ✔")
 
         # Display metrics properly
-        st.metric("Model Accuracy (R²)", f"{(r2*100+_):.2f}%" if r2 is not None else "N/A")
+        st.metric("Model Accuracy (R²)", f"{(r2*100):.2f}%" if r2 is not None else "N/A")
         st.metric("Mean Absolute Error", f"{mae:.2f}" if mae is not None else "N/A")
 
 
@@ -682,7 +682,7 @@ else:
     print("🧠 Training model (CLI fallback)...")
     model, r2, mae, features = train_xgboost_cpu(df)
     if r2 is not None:
-        print(f"✅ Model trained. R²={(r2*100+_):.2f}%, MAE={mae:.2f}")
+        print(f"✅ Model trained. R²={(r2*100):.2f}%, MAE={mae:.2f}")
     else:
         print("✅ Model loaded from disk.")
 
