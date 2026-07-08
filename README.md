@@ -2,16 +2,11 @@
 
 ---
 
-
-
 # Inside your .venv terminal for this project, run:
 
-set STREAMLIT_CONFIG_DIR=D:\VS Code Programs\Python\gtd\.streamlit
+set STREAMLIT_CONFIG_DIR={path to file}\gtd\.streamlit
 
-# Activate Venv.
 
-.venv/scripts/activate
-
-# Run Streamlit
+# Run The File
 
 streamlit run gtd_dashboard_final.py
