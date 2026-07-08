@@ -1,7 +1,17 @@
 # Global-Terrorism-Prediction
 
+---
 
-Inside your .venv terminal for this project, run:
 
-set STREAMLIT_CONFIG_DIR=D:\{path to file}\gtd\.streamlit
+
+# Inside your .venv terminal for this project, run:
+
+set STREAMLIT_CONFIG_DIR=D:\VS Code Programs\Python\gtd\.streamlit
+
+# Activate Venv.
+
+.venv/scripts/activate
+
+# Run Streamlit
+
 streamlit run gtd_dashboard_final.py
