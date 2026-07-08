@@ -1,0 +1,5 @@
+=== Classification Metrics (Severity Buckets) ===
+Accuracy:  0.6321
+Precision: 0.6489
+Recall:    0.5275
+F1-Score:  0.5152

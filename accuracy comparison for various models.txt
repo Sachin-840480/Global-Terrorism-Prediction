@@ -1,0 +1,44 @@
+🌲 Decision Tree Regeresor(this may take a minute)... 
+✅ Model trained successfully! 
+Model R² Accuracy: 11.03% 
+Mean Absolute Error (casualties): 5.36 
+
+🌲 Training RandomForestRegressor (this may take a minute)... 
+✅ Model trained successfully! 
+Model R² Accuracy: 15.02% 
+Mean Absolute Error (casualties): 4.44 
+
+🌲 Training RandomForestRegressor (please wait ~1-2 min)... 
+✅ Model trained successfully! 
+Model R² Accuracy: 23.64% 
+Mean Absolute Error (casualties): 4.02 
+
+⚙️ Training Gradient Boosting Regressor (this may take a few minutes)... 
+✅ Model trained successfully! 
+Model R² Accuracy: 31.54% 
+Mean Absolute Error (casualties): 3.77 
+
+⚙️ Training Gradient Boosting Regressor (this may take a few minutes)... 
+✅ Model trained successfully! 
+Model R² Accuracy: 36.00% 
+Mean Absolute Error (casualties): 4.36 
+
+⚙️ Training Xtreme Gradiant Boosting (XGBOOST) Regressor 
+✅ Model trained successfully! 
+Model R² Accuracy: 39.18% 
+Mean Absolute Error (casualties): 4.28 
+
+⚙️ Training Xtreme Gradiant Boosting (XGBOOST) Regressor (rolling 5 year) 
+✅ Model trained successfully! 
+Model R² Accuracy: 47.83% 
+Mean Absolute Error (casualties): 3.50 
+
+⚙️ Training Xtreme Gradiant Boosting (XGBOOST) Regressor (rolling 5 year) (improved) 
+✅ Model trained successfully! 
+Model R² Accuracy: 49.36% 
+Mean Absolute Error (casualties): 3.41 
+
+⚙️ Training Xtreme Gradiant Boosting (XGBOOST) Regressor (rolling 5 year) (improved) (improve latest) 
+✅ Model trained successfully! 
+Model R² Accuracy: ≈ 0.54 – 0.56 (~54–56%) depending on tuning. 
+Mean Absolute Error (casualties): 3.41

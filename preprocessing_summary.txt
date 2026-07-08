@@ -1,0 +1,7 @@
+Original Rows: 205014
+Original Columns: 19
+Processed Rows: 205014
+Processed Columns: 37
+Rows Removed: 0
+Features Added: 18
+Retention: 100.00%
