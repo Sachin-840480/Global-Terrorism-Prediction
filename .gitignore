@@ -1,5 +1,6 @@
 # data/gtd.csv
 # model/xgb_gtd_model.json
 model/xgb_gtd_model2.json
-
+*.bat
+*.ps1
 *.html
