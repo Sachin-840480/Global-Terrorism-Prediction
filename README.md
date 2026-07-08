@@ -1,4 +1,4 @@
-# gtd
+# Global-Terrorism-Prediction
 
 
 Inside your .venv terminal for this project, run:
