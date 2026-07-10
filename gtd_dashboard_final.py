@@ -669,73 +669,123 @@ if STREAMLIT:
         st.pyplot(fig2)
         st.caption("Residuals centered around zero show the model has no strong systematic error.")
 
-    # ================================================================
-    # MODEL COMPARISON TAB
-    # ================================================================
+# ================================================================
+# 📈 MODEL COMPARISON TAB
+# ================================================================
 
     with tab_compare:
+
         st.header("📈 Comparative Analysis of Regression Models")
+
         comparison = load_model_comparison()
 
         if comparison.empty:
             st.warning("Model comparison file not found.")
 
         else:
+
+            comparison["Model"] = comparison["Model"].str.replace(" ", "\n")
+
             fig, ax1 = plt.subplots(figsize=(14,6))
 
-            # R² bars
-            bars = ax1.bar(comparison["Model"], comparison["R2"], label="R² Score ↑")
+            fig.patch.set_facecolor("white")
+            ax1.set_facecolor("white")
+
+
+            # ==========================
+            # GRID BEHIND EVERYTHING
+            # ==========================
+
+            ax1.set_axisbelow(True)
+
+            ax1.grid(axis="y", color="#D0D0D0", linewidth=0.8, alpha=0.8)
+            ax1.grid(axis="x", visible=False)
+
+
+            # ==========================
+            # R² BAR CHART
+            # ==========================
+
+            bars = ax1.bar(comparison["Model"], comparison["R2"], width=0.5, color="#4FC3CF", label="R² Score ↑", zorder=3)
+
+            ax1.margins(x=0.08)
 
             ax1.set_ylim(0,0.6)
-            ax1.set_ylabel("R² Score")
+            ax1.set_yticks([0,0.2,0.4,0.6])
+            ax1.set_ylabel("R² Score", fontsize=11)
 
-            for bar in bars:
-                value = bar.get_height()
-                ax1.text(bar.get_x() + bar.get_width()/2 , value + 0.015, f"{value:.4f}", ha="center", fontweight="bold")
 
-            # MAE line
+            # ==========================
+            # MAE LINE AXIS
+            # ==========================
+
             ax2 = ax1.twinx()
-            ax2.plot(comparison["Model"], comparison["MAE"], marker="o", linewidth=3, label="MAE ↓")
+
+            ax2.plot(comparison["Model"], comparison["MAE"], marker="o", markersize=6, linewidth=3, color="#F5B83D", label="MAE ↓", zorder=5)
+
             ax2.set_ylim(0,6)
-            ax2.set_ylabel("MAE (Casualties)")
+            ax2.set_ylabel("MAE (Casualties)", fontsize=11)
 
+
+            # ==========================
+            # REMOVE BORDERS
+            # ==========================
+
+            for ax in [ax1, ax2]:
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+
+
+            # ==========================
+            # VALUE LABELS
+            # ==========================
+
+            # R² labels
+            for bar in bars:
+
+                value = bar.get_height()
+
+                ax1.text(bar.get_x()+bar.get_width()/2, value+0.015, f"{value:.4f}", ha="center", fontsize=10, fontweight="bold", zorder=6)
+
+
+            # MAE labels
             for i,value in enumerate(comparison["MAE"]):
-                ax2.text(i, value + 0.15, f"{value:.2f}", ha="center", fontweight="bold")
 
-            plt.xticks(rotation=25, ha="right")
+                ax2.text(i, value+0.15, f"{value:.2f}", ha="center", fontsize=10, fontweight="bold", zorder=6)
+
+
+            # ==========================
+            # AXIS FORMATTING
+            # ==========================
+
+            ax1.tick_params(axis="x", labelsize=9)
+            ax1.tick_params(axis="y", labelsize=10)
+            ax2.tick_params(axis="y", labelsize=10)
+
+            plt.xticks(rotation=0, ha="center", fontweight="bold")
+
+
+            # ==========================
+            # LEGEND
+            # ==========================
 
             h1,l1 = ax1.get_legend_handles_labels()
             h2,l2 = ax2.get_legend_handles_labels()
-            ax1.legend(h1+h2, l1+l2, loc="upper center", bbox_to_anchor=(0.5,-0.30), ncol=2)
+
+            ax1.legend(h1+h2, l1+l2, loc="upper center", bbox_to_anchor=(0.5,-0.16), ncol=2, frameon=False, fontsize=11)
+
+
             plt.tight_layout()
 
             st.pyplot(fig)
+
+
             st.caption(
                 """
                 Higher R² indicates stronger predictive capability.
                 Lower MAE indicates reduced casualty prediction error.
                 """
             )
-
-    # ================================================================
-    # MAP TAB
-    # ================================================================
-
-    # MAP TAB
-    with tab_map:
-        st.header(f"🗺️ Severity Risk Map — {future_year}")
-
-        fmap, pred_df = predict_and_map(df, model, features, future_year, sample_size, country_filter)
-        st.components.v1.html(fmap._repr_html_(), height=650)
-
-        out_path = f"gtd_predicted_map_{future_year}.html"
-        fmap.save(out_path)
-        with open(out_path, "rb") as f:
-            st.download_button("⬇️ Download Map HTML", f, file_name=os.path.basename(out_path), mime="text/html")
-
-        st.dataframe(pred_df[['country_txt', 'attacktype1_txt', 'latitude', 'longitude', 'predicted_casualties']].head(15))
-
-    st.caption("Built with Streamlit, Folium, Matplotlib & XGBoost. Data: GTD.")
 
 # ================================================================
 # 5️⃣ Fallback for Jupyter / CLI Mode
