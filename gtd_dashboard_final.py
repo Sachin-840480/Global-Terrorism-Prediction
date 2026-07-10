@@ -669,9 +669,9 @@ if STREAMLIT:
         st.pyplot(fig2)
         st.caption("Residuals centered around zero show the model has no strong systematic error.")
 
-# ================================================================
-# 📈 MODEL COMPARISON TAB
-# ================================================================
+    # ================================================================
+    # 📈 MODEL COMPARISON TAB
+    # ================================================================
 
     with tab_compare:
 
