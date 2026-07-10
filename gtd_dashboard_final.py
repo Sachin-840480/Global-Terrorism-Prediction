@@ -720,8 +720,9 @@ if STREAMLIT:
             # ==========================
 
             ax2 = ax1.twinx()
+            ax2.grid(False)
 
-            ax2.plot(comparison["Model"], comparison["MAE"], marker="o", markersize=6, linewidth=3, color="#F5B83D", label="MAE ↓", zorder=5)
+            ax2.plot(comparison["Model"], comparison["MAE"], marker="o", markersize=6, linewidth=3, color="#F5B83D", label="MAE (Casualties) ↓", zorder=5)
 
             ax2.set_ylim(0,6)
             ax2.set_ylabel("MAE (Casualties)", fontsize=11)
