@@ -1,0 +1,9 @@
+Model,R2,MAE
+Decision Tree,0.1103,5.36
+Random Forest (v1),0.1502,4.44
+Random Forest (v2),0.2364,4.02
+Gradient Boosting (v1),0.3154,3.77
+Gradient Boosting (v2),0.3600,4.36
+XGBoost (Base),0.3918,4.28
+XGBoost (Rolling Window),0.4783,3.50
+XGBoost (Fine-Tuned),0.4936,3.41

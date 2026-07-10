@@ -42,6 +42,8 @@ plt.style.use("seaborn-v0_8-darkgrid")
 # ================================================================
 
 DATA_PATH = r'./data/gtd.csv'   # change if needed
+COMPARISON_PATH = r'./model/model_comparison.csv'
+
 DEFAULT_FUTURE_YEAR = 2026
 DEFAULT_SAMPLE_SIZE = 300
 
@@ -394,6 +396,18 @@ def predict_and_map(df, model, features, future_year, sample_size=300, country_f
 
     return fmap, sample
 
+
+# ================================================================
+# LOADER FUNCTION FOR MODEL COMPARISON TABLE
+# ================================================================
+
+def load_model_comparison():
+    if os.path.exists(COMPARISON_PATH):
+        return pd.read_csv(COMPARISON_PATH)
+
+    return pd.DataFrame()
+
+
 # ================================================================
 # 4️⃣ Streamlit Dashboard (Main)
 # ================================================================
@@ -416,7 +430,7 @@ if STREAMLIT:
     countries = sorted(df['country_txt'].unique().tolist())
     country_filter = st.sidebar.multiselect("Filter by Country", countries, default=[])
 
-    tab_eda, tab_model, tab_map = st.tabs(["📊 Data Insights", "🧠 Model", "🗺️ Map"])
+    tab_eda, tab_model, tab_compare, tab_map = st.tabs(["📊 Data Insights", "🧠 Model", "📈 Model Comparison", "🗺️ Map"])
 
     # EDA Tab
     with tab_eda:
@@ -654,6 +668,58 @@ if STREAMLIT:
 
         st.pyplot(fig2)
         st.caption("Residuals centered around zero show the model has no strong systematic error.")
+
+    # ================================================================
+    # MODEL COMPARISON TAB
+    # ================================================================
+
+    with tab_compare:
+        st.header("📈 Comparative Analysis of Regression Models")
+        comparison = load_model_comparison()
+
+        if comparison.empty:
+            st.warning("Model comparison file not found.")
+
+        else:
+            fig, ax1 = plt.subplots(figsize=(14,6))
+
+            # R² bars
+            bars = ax1.bar(comparison["Model"], comparison["R2"], label="R² Score ↑")
+
+            ax1.set_ylim(0,0.6)
+            ax1.set_ylabel("R² Score")
+
+            for bar in bars:
+                value = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width()/2 , value + 0.015, f"{value:.4f}", ha="center", fontweight="bold")
+
+            # MAE line
+            ax2 = ax1.twinx()
+            ax2.plot(comparison["Model"], comparison["MAE"], marker="o", linewidth=3, label="MAE ↓")
+            ax2.set_ylim(0,6)
+            ax2.set_ylabel("MAE (Casualties)")
+
+            for i,value in enumerate(comparison["MAE"]):
+                ax2.text(i, value + 0.15, f"{value:.2f}", ha="center", fontweight="bold")
+
+            plt.xticks(rotation=25, ha="right")
+
+            h1,l1 = ax1.get_legend_handles_labels()
+            h2,l2 = ax2.get_legend_handles_labels()
+            ax1.legend(h1+h2, l1+l2, loc="upper center", bbox_to_anchor=(0.5,-0.30), ncol=2)
+            plt.tight_layout()
+
+            st.pyplot(fig)
+            st.caption(
+                """
+                Higher R² indicates stronger predictive capability.
+                Lower MAE indicates reduced casualty prediction error.
+                """
+            )
+
+    # ================================================================
+    # MAP TAB
+    # ================================================================
 
     # MAP TAB
     with tab_map:
