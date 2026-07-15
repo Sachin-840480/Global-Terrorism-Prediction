@@ -570,7 +570,11 @@ if STREAMLIT:
         # Build SHAP Explainer (Create Once)
         # ============================================================
 
-        explainer = shap.TreeExplainer(model)   
+        @st.cache_resource(show_spinner=False)
+        def compute_shap(_model, X):
+            explainer = shap.TreeExplainer(_model)
+            shap_values = explainer.shap_values(X)
+            return explainer, shap_values
 
         # r2 and mae are ALWAYS returned by load_or_train()
         # If model is loaded -> r2 and mae contain saved values
@@ -700,16 +704,16 @@ if STREAMLIT:
         # Generate SHAP values
         # ------------------------------------------------------------
 
-        with st.spinner("Generating SHAP explanations..."):
+        X_shap = X_test.sample(
+            min(1000, len(X_test)),
+            random_state=42
+        )
 
-            X_shap = X_test.sample(
-                min(1000, len(X_test)),
-                random_state=42
-            )
+        with st.spinner("Generating SHAP explanations (first run only)..."):
 
-            shap_values = explainer.shap_values(X_shap)
+            explainer, shap_values = compute_shap(model, X_shap)
 
-        st.success("SHAP values generated successfully.")
+        st.success("SHAP values ready.")
 
         # ============================================================
         # SHAP SUMMARY PLOT
@@ -787,25 +791,29 @@ if STREAMLIT:
         # SHAP FORCE PLOT
         # ============================================================
 
-        st.subheader("⚡ SHAP Force Plot")
+        st.subheader("🌊 SHAP Waterfall Plot")
 
         st.markdown("""
-        Explains one individual prediction.
+        Shows how each feature contributes to one prediction.
 
-        Red features push the prediction upward.
+        Red features increase the predicted casualties.
 
-        Blue features push the prediction downward.
+        Blue features decrease the predicted casualties.
         """)
 
         sample = 0
 
-        fig = plt.figure(figsize=(16,3))
+        fig, ax = plt.subplots(figsize=(12,6))
 
-        shap.force_plot(
-            explainer.expected_value,
-            shap_values[sample],
-            X_shap.iloc[sample],
-            matplotlib=True,
+        explanation = shap.Explanation(
+            values=shap_values[sample],
+            base_values=explainer.expected_value,
+            data=X_shap.iloc[sample],
+            feature_names=X_shap.columns
+        )
+
+        shap.plots.waterfall(
+            explanation,
             show=False
         )
 
