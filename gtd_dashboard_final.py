@@ -777,14 +777,22 @@ if STREAMLIT:
             "Mean |SHAP|": np.abs(shap_values).mean(axis=0)
         })
 
+        # Sort by importance
         importance = importance.sort_values(
             by="Mean |SHAP|",
             ascending=False
-        )
+        ).reset_index(drop=True)
 
+        # Add ranking
+        importance.insert(0, "Rank", range(1, len(importance) + 1))
+
+        # Display
         st.dataframe(
-            importance,
-            use_container_width=True
+            importance.style.format({
+                "Mean |SHAP|": "{:.4f}"
+            }),
+            use_container_width=True,
+            hide_index=True
         )
 
         # ============================================================
