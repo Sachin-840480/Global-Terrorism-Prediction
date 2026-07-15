@@ -1,0 +1,20 @@
+Rank,Feature,Mean |SHAP|
+1,country_5yr_mean,0.4029398
+2,success,0.108243085
+3,targtype1_freq,0.099363275
+4,attack_mean,0.08495624
+5,weaptype1_freq,0.043097023
+6,attacktype1_cat,0.04223267
+7,country_mean,0.03869936
+8,targtype1_cat,0.03432001
+9,attacktype1_freq,0.03166595
+10,iyear,0.022579905
+11,weaptype1_cat,0.019103693
+12,country_freq,0.017482458
+13,region_attack_freq,0.017224366
+14,country_cat,0.0139541235
+15,imonth,0.007870407
+16,region_cat,0.005855482
+17,region_freq,0.004415019
+18,year_trend,0.0030949228
+19,region_mean,0.0028638279

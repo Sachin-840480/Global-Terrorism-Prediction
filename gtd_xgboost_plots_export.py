@@ -16,8 +16,8 @@ plt.style.use("seaborn-v0_8-darkgrid")
 # ================================================================
 # CONFIG
 # ================================================================
-DATA_PATH = r'D:/VS Code Programs/Python/gtd/data/gtd.csv'
-EXPORT_FOLDER = r'D:/VS Code Programs/Python/gtd/exports'
+DATA_PATH = r'E:/VS Code Programs/Python/Global-Terrorism-Prediction/data/gtd.csv'
+EXPORT_FOLDER = r'E:/VS Code Programs/Python/Global-Terrorism-Prediction/exports'
 os.makedirs(EXPORT_FOLDER, exist_ok=True)
 
 def save_chart(fig, name):

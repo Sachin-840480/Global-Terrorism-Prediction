@@ -1,0 +1,21 @@
+============================================================
+GLOBAL TERRORISM DASHBOARD
+Publication Figure Export
+============================================================
+
+Dataset Records : 205,014
+Features        : 19
+Model           : XGBoost Regressor
+Trees           : 2000
+Max Depth       : 9
+Learning Rate   : 0.005
+R² Score        : 0.4976
+MAE             : 3.4100
+DPI             : 600
+
+Exported folders
+----------------
+EDA
+MODEL
+COMPARISON
+SHAP
