@@ -16,6 +16,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import folium
 import json
+import shap
 
 # Optional Streamlit import
 try:
@@ -430,7 +431,7 @@ if STREAMLIT:
     countries = sorted(df['country_txt'].unique().tolist())
     country_filter = st.sidebar.multiselect("Filter by Country", countries, default=[])
 
-    tab_eda, tab_model, tab_compare, tab_map = st.tabs(["📊 Data Insights", "🧠 Model", "📈 Model Comparison", "🗺️ Map"])
+    tab_eda, tab_model, tab_shap, tab_compare, tab_map = st.tabs(["📊 Data Insights", "🧠 Model", "🔍 SHAP Explainability", "📈 Model Comparison", "🗺️ Map"])
 
     # EDA Tab
     with tab_eda:
@@ -565,6 +566,12 @@ if STREAMLIT:
         with st.spinner("Training model..."):
             model, r2, mae, features = load_or_train()
 
+        # ============================================================
+        # Build SHAP Explainer (Create Once)
+        # ============================================================
+
+        explainer = shap.TreeExplainer(model)   
+
         # r2 and mae are ALWAYS returned by load_or_train()
         # If model is loaded -> r2 and mae contain saved values
         # If model is trained -> r2 and mae contain fresh values
@@ -669,9 +676,164 @@ if STREAMLIT:
         st.pyplot(fig2)
         st.caption("Residuals centered around zero show the model has no strong systematic error.")
 
-# ================================================================
-# 📈 MODEL COMPARISON TAB
-# ================================================================
+    
+    # ================================================================
+    # 🔍 SHAP Explainability
+    # ================================================================
+
+    with tab_shap:
+
+        st.header("🔍 Model Explainability using SHAP")
+
+        st.markdown("""
+        SHAP (**SHapley Additive exPlanations**) explains why the XGBoost
+        model predicts higher or lower casualties.
+
+        Unlike traditional feature importance, SHAP shows:
+
+        • Which features matter the most.
+        • Whether they increase or decrease the prediction.
+        • The contribution of every feature for every prediction.
+        """)
+
+        # ------------------------------------------------------------
+        # Generate SHAP values
+        # ------------------------------------------------------------
+
+        with st.spinner("Generating SHAP explanations..."):
+
+            X_shap = X_test.sample(
+                min(1000, len(X_test)),
+                random_state=42
+            )
+
+            shap_values = explainer.shap_values(X_shap)
+
+        st.success("SHAP values generated successfully.")
+
+        # ============================================================
+        # SHAP SUMMARY PLOT
+        # ============================================================
+
+        st.subheader("📌 SHAP Summary Plot")
+
+        st.markdown("""
+        Shows the influence of every feature across all predictions.
+
+        • Red = High feature value
+
+        • Blue = Low feature value
+
+        • Features are ranked by importance.
+        """)
+
+        fig = plt.figure(figsize=(10,7))
+
+        shap.summary_plot(
+            shap_values,
+            X_shap,
+            show=False
+        )
+
+        st.pyplot(fig)
+        plt.close(fig)
+
+        # ============================================================
+        # SHAP BAR PLOT
+        # ============================================================
+
+        st.subheader("📊 SHAP Feature Importance")
+
+        st.markdown("""
+        Average absolute SHAP values for each feature.
+
+        Larger bars indicate greater influence on model predictions.
+        """)
+
+        fig = plt.figure(figsize=(10,6))
+
+        shap.summary_plot(
+            shap_values,
+            X_shap,
+            plot_type="bar",
+            show=False
+        )
+
+        st.pyplot(fig)
+        plt.close(fig)
+
+        # ============================================================
+        # FEATURE IMPORTANCE TABLE
+        # ============================================================
+
+        st.subheader("🏆 Top Features")
+
+        importance = pd.DataFrame({
+            "Feature": X_shap.columns,
+            "Mean |SHAP|": np.abs(shap_values).mean(axis=0)
+        })
+
+        importance = importance.sort_values(
+            by="Mean |SHAP|",
+            ascending=False
+        )
+
+        st.dataframe(
+            importance,
+            use_container_width=True
+        )
+
+        # ============================================================
+        # SHAP FORCE PLOT
+        # ============================================================
+
+        st.subheader("⚡ SHAP Force Plot")
+
+        st.markdown("""
+        Explains one individual prediction.
+
+        Red features push the prediction upward.
+
+        Blue features push the prediction downward.
+        """)
+
+        sample = 0
+
+        fig = plt.figure(figsize=(16,3))
+
+        shap.force_plot(
+            explainer.expected_value,
+            shap_values[sample],
+            X_shap.iloc[sample],
+            matplotlib=True,
+            show=False
+        )
+
+        st.pyplot(fig)
+        plt.close(fig)
+
+        # ============================================================
+        # INTERPRETATION
+        # ============================================================
+
+        st.subheader("📝 Interpretation")
+
+        st.info("""
+    • Features near the top of the Summary Plot have the greatest impact on predictions.
+
+    • The Bar Plot ranks features according to their overall contribution.
+
+    • Red points indicate higher feature values, while blue points indicate lower values.
+
+    • The Force Plot explains why the selected prediction is high or low.
+
+    SHAP improves model transparency by providing both global and local explanations for every prediction.
+    """)
+
+    
+    # ================================================================
+    # 📈 MODEL COMPARISON TAB
+    # ================================================================
 
     with tab_compare:
 
