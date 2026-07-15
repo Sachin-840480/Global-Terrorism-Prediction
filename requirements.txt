@@ -4,3 +4,4 @@ seaborn==0.13.2
 scikit-learn==1.7.2
 numpy==2.3.4
 folium==0.20.0
+shap==0.51.0
