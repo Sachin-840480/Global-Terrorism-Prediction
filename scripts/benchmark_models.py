@@ -1,7 +1,5 @@
-import json
 import numpy as np
 import pandas as pd
-import os
 import matplotlib.pyplot as plt
 
 from xgboost import XGBRegressor
@@ -11,14 +9,21 @@ from sklearn.metrics import (
     mean_squared_error,
 )
 
+from pathlib import Path
+
 # ==========================================================
 # PATHS
 # ==========================================================
 
-DATA_PATH = r"./data/gtd.csv"
+ROOT = Path(__file__).resolve().parents[1]
 
-MODEL1_PATH = r"./model/xgb_gtd_model.json"
-MODEL2_PATH = r"./model/xgb_gtd_model2.json"
+DATA_PATH = ROOT / "data" / "gtd.csv"
+
+MODEL1_PATH = ROOT / "model" / "xgb_gtd_model.json"
+MODEL2_PATH = ROOT / "model" / "xgb_gtd_model2.json"
+
+EXPORT_DIR = ROOT / "exports" / "benchmark"
+EXPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================================
 # LOAD DATA
@@ -145,18 +150,12 @@ y_test = D.loc[~train_mask, "log_casualties"]
 # EVALUATION FUNCTION
 # ==========================================================
 
-import os
-import matplotlib.pyplot as plt
-
-EXPORT_DIR = "./model_comparison"
-os.makedirs(EXPORT_DIR, exist_ok=True)
-
 def evaluate(model_path):
 
     model = XGBRegressor()
     model.load_model(model_path)
 
-    model_name = os.path.splitext(os.path.basename(model_path))[0]
+    model_name = model_path.stem
 
     # -----------------------------
     # Predictions
@@ -189,8 +188,8 @@ def evaluate(model_path):
     plt.figure(figsize=(8,6))
 
     plt.scatter(
-        np.log1p(y_actual),
-        np.log1p(pred_actual),
+        y_actual,
+        pred_actual,
         alpha=0.30,
         edgecolor="black",
         linewidth=0.3
@@ -214,11 +213,9 @@ def evaluate(model_path):
     plt.tight_layout()
 
     plt.savefig(
-        os.path.join(
-            EXPORT_DIR,
-            f"{model_name}_actual_vs_predicted.png"
-        ),
-        dpi=400
+        EXPORT_DIR / f"{model_name}_actual_vs_predicted.png",
+        dpi=400,
+        bbox_inches="tight"
     )
 
     plt.close()
@@ -255,16 +252,14 @@ def evaluate(model_path):
     plt.tight_layout()
 
     plt.savefig(
-        os.path.join(
-            EXPORT_DIR,
-            f"{model_name}_residual_plot.png"
-        ),
-        dpi=400
+        EXPORT_DIR / f"{model_name}_residual_plot.png",
+        dpi=400,
+        bbox_inches="tight"
     )
 
     plt.close()
 
-    return pred_actual
+    return pred_actual, r2, mae, rmse
 
 
 
@@ -272,11 +267,41 @@ def evaluate(model_path):
 # RUN
 # ==========================================================
 
-pred1 = evaluate(MODEL1_PATH)
-pred2 = evaluate(MODEL2_PATH)
+pred1, r2_model1, mae_model1, rmse_model1 = evaluate(MODEL1_PATH)
+
+pred2, r2_model2, mae_model2, rmse_model2 = evaluate(MODEL2_PATH)
+
+results = pd.DataFrame([
+    {
+        "Model": MODEL1_PATH.name,
+        "R2": r2_model1,
+        "MAE": mae_model1,
+        "RMSE": rmse_model1
+    },
+    {
+        "Model": MODEL2_PATH.name,
+        "R2": r2_model2,
+        "MAE": mae_model2,
+        "RMSE": rmse_model2
+    }
+])
+
+results.to_csv(
+    EXPORT_DIR / "benchmark_results.csv",
+    index=False
+)
 
 print("\nAverage prediction difference:",
       np.mean(np.abs(pred1 - pred2)))
 
 print("Maximum prediction difference:",
       np.max(np.abs(pred1 - pred2)))
+
+print("\n" + "=" * 65)
+print("Model Comparison")
+print("=" * 65)
+print(results.to_string(index=False))
+
+better_model = results.loc[results["R2"].idxmax(), "Model"]
+
+print(f"\nBest Model : {better_model}")

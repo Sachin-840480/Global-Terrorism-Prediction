@@ -1,10 +1,20 @@
+
+# ignore dataset
 # data/gtd.csv
+
 # model/xgb_gtd_model.json
 model/xgb_gtd_model2.json
+
+# ignore png files in exports/benchmark
+exports/benchmark/*.png
+
+# ignore scripts files
 *.bat
 *.ps1
 *.html
-__pycache__
-
 start_servers.bat
 start_streamlit.ps1
+
+# ignore cache folder
+__pycache__
+
