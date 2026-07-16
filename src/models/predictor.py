@@ -11,14 +11,19 @@ from src.config import ATTACK_COLORS
 # Prediction + Folium Map
 # ================================================================
 
-def predict_and_map(df, model, features, future_year, sample_size=300, country_filter=None):
+def predict_and_map(df, model, features, future_year, sample_size=300, country_filter=None, deterministic=True):
     D = df.copy()
     if country_filter:
         D = D[D["country_txt"].isin(country_filter)]
         if D.empty:
             D = df.copy()
 
-    sample = D.sample(n=min(sample_size, len(D)), random_state=future_year).copy()
+    if deterministic:                                                                   # When enabled, the same year always produces the same prediction map.
+        sample = D.sample(n=min(sample_size, len(D)),random_state=future_year,).copy()  # Disable for a different random sample on each run.       
+                                                                                             
+    else:                                                                                          
+        sample = D.sample(n=min(sample_size, len(D)),).copy()
+
     sample["iyear"] = future_year
     sample["nkill"] = sample["nkill"].fillna(0)
     sample["nwound"] = sample["nwound"].fillna(0)
