@@ -1,0 +1,13 @@
+[theme]
+base = "light"
+
+[server]
+headless = true
+
+[client]
+toolbarMode = "developer"
+
+[runner]
+fastReruns = true
+
+
