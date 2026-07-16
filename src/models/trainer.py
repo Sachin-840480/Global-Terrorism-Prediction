@@ -47,6 +47,8 @@ def train_xgboost_cpu(df):
             model.load_model(MODEL_PATH)
             print("⚡ Loaded saved model from disk.")
 
+            features = None
+
             # always load the saved features
             if os.path.exists(FEATURES_PATH):
                 with open(FEATURES_PATH, "r", encoding="utf-8") as f:
