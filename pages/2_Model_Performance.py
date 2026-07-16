@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 
+from src.utils.page_width import configure_page
+configure_page()
+
 from src.utils.cache import (
     get_data,
     get_model,

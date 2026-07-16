@@ -1,6 +1,9 @@
 import os
 import streamlit as st
 
+from src.utils.page_width import configure_page
+configure_page()
+
 from src.config import (
     YEAR_MIN,
     YEAR_MAX,
@@ -52,13 +55,19 @@ future_year = st.sidebar.slider("Future Year",YEAR_MIN,YEAR_MAX,DEFAULT_FUTURE_Y
 sample_size = st.sidebar.slider("Sample Size (Map)",SIZE_MIN,SIZE_MAX,DEFAULT_SAMPLE_SIZE,50,)
 countries = get_countries(df)
 country_filter = st.sidebar.multiselect("Filter by Country",countries,default=[],)
+deterministic = st.sidebar.checkbox("Deterministic Prediction",value=True,
+    help=(
+        "When enabled, the same year always produces the same prediction map. "
+        "Disable for a different random sample on each run."
+    ),
+)
 
 # ================================================================
 # Prediction
 # ================================================================
 
 with st.spinner("Generating prediction map..."):
-    fmap, pred_df = predict_and_map(df,model,features,future_year,sample_size,country_filter,)
+    fmap, pred_df = predict_and_map(df,model,features,future_year,sample_size,country_filter,deterministic,)
 
 # ================================================================
 # Map

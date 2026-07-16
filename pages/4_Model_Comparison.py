@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import streamlit as st
 
+from src.utils.page_width import configure_page
+configure_page()
+
 from src.utils.cache import get_model_comparison
 
 from src.visualization.comparison import (

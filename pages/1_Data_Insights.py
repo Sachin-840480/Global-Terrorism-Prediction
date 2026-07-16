@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import streamlit as st
 
+from src.utils.page_width import configure_page
+configure_page()
+
 from src.data.loader import load_data
 from src.visualization.eda import (
     plot_attacks_per_year,
@@ -36,10 +39,10 @@ Explore historical terrorism trends from the
 # Attacks Per Year
 # ================================================================
 
-st.markdown("###📈 Global Terror Attacks per Year")
+st.markdown("### Global Terror Attacks per Year")
 
 fig = plot_attacks_per_year(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 st.caption(
@@ -50,70 +53,70 @@ st.caption(
 # Top Countries
 # ================================================================
 
-st.markdown("###🌍 Top 10 Most Affected Countries")
+st.markdown("### Top 10 Most Affected Countries")
 
 fig = plot_top_countries(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Attack Types
 # ================================================================
 
-st.markdown("###💥 Most Common Attack Types")
+st.markdown("### Most Common Attack Types")
 
 fig = plot_attack_types(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Terrorist Organizations
 # ================================================================
 
-st.markdown("###🏴 Top 50 Terrorist Organizations")
+st.markdown("### Top 50 Terrorist Organizations")
 
 fig = plot_top_groups(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Average Casualties
 # ================================================================
 
-st.markdown("###☠️ Average Casualties by Attack Type")
+st.markdown("### Average Casualties by Attack Type")
 
 fig = plot_average_casualties(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Regional Trends
 # ================================================================
 
-st.markdown("###🌎 Regional Terrorism Trends")
+st.markdown("### Regional Terrorism Trends")
 
 fig = plot_regional_trends(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Correlation Heatmap
 # ================================================================
 
-st.markdown("###📊 Casualty Correlation Matrix")
+st.markdown("### Casualty Correlation Matrix")
 
 fig = plot_correlation_heatmap(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 # ================================================================
 # Weapon Distribution
 # ================================================================
 
-st.markdown("###🔫 Weapon Type Distribution")
+st.markdown("### Weapon Type Distribution")
 
 fig = plot_weapon_distribution(df)
-st.pyplot(fig)
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
 

@@ -3,6 +3,9 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+from src.utils.page_width import configure_page
+configure_page()
+
 from src.data.preprocessing import engineer_features
 
 from src.utils.cache import (
