@@ -1,3 +1,5 @@
+import numpy as np
+
 # -------------------------------------------------
 # 1. Feature engineering
 # -------------------------------------------------
@@ -5,7 +7,6 @@
 def engineer_features(df):
 
     D = df.copy()
-
     D["nkill"] = D["nkill"].fillna(0)
     D["nwound"] = D["nwound"].fillna(0)
     D["total_casualties"] = D["nkill"] + D["nwound"]
