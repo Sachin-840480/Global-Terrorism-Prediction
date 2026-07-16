@@ -23,6 +23,8 @@ from src.models.predictor import predict_and_map
 
 from src.utils.helpers import page_footer
 
+from src.config import EXPORT_MAP_DIR
+
 # ================================================================
 # Page
 # ================================================================
@@ -80,7 +82,9 @@ st.components.v1.html(fmap._repr_html_(),height=650,)
 # Download
 # ================================================================
 
-out_path = f"gtd_predicted_map_{future_year}.html"
+EXPORT_MAP_DIR.mkdir(parents=True, exist_ok=True)
+out_path = EXPORT_MAP_DIR / f"gtd_predicted_map_{future_year}.html"
+
 fmap.save(out_path)
 with open(out_path, "rb") as f:
     st.download_button("⬇️ Download Map HTML",f,file_name=os.path.basename(out_path),mime="text/html",)

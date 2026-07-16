@@ -6,21 +6,34 @@ DATA_DIR = ROOT / "data"
 MODEL_DIR = ROOT / "model"
 EXPORT_DIR = ROOT / "exports"
 
+
+EXPORT_EDA_DIR = EXPORT_DIR / "eda"
+EXPORT_MODEL_DIR = EXPORT_DIR / "model"
+EXPORT_SHAP_DIR = EXPORT_DIR / "shap"
+EXPORT_COMPARISON_DIR = EXPORT_DIR / "comparison"
+EXPORT_MAP_DIR = EXPORT_DIR / "maps"
+
+
 DATA_PATH = DATA_DIR / "gtd.csv"
+
 
 MODEL_PATH = MODEL_DIR / "xgb_gtd_model.json"
 FEATURES_PATH = MODEL_DIR / "features.txt"
 METRICS_PATH = MODEL_DIR / "metrics.json"
 COMPARISON_PATH = MODEL_DIR / "model_comparison.csv"
 
+
 DEFAULT_FUTURE_YEAR = 2026
 DEFAULT_SAMPLE_SIZE = 300
+
 
 YEAR_MIN = 2025
 YEAR_MAX = 2040
 
+
 SIZE_MIN = 10
 SIZE_MAX = 2000
+
 
 ATTACK_COLORS = {
     1: "blue",
