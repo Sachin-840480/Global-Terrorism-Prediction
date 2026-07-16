@@ -1,3 +1,8 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+
 def plot_attacks_per_year(df):
 
     # Attacks per year
@@ -7,7 +12,6 @@ def plot_attacks_per_year(df):
     ax.set_title("Global Terror Attacks per Year")
     ax.set_xlabel("Year")
     ax.set_ylabel("Number of Attacks")
-    pyplot(fig)
 
     return fig
 
@@ -20,11 +24,10 @@ def plot_top_countries(df):
     ax.set_title("Top 10 Most Affected Countries")
     ax.set_xlabel("Number of Attacks")
     ax.set_ylabel("Country")
-    pyplot(fig)
 
     return fig
 
-def plot_top_countries(df):
+def plot_attack_types(df):
 
     # Attack types
     attack_counts = df['attacktype1_txt'].value_counts().head(10)
@@ -33,11 +36,10 @@ def plot_top_countries(df):
     ax.set_title("Most Common Attack Types")
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Attack Type")
-    pyplot(fig)
 
     return fig
 
-def plot_top_countries(df):
+def plot_top_groups(df):
     
     # Terrorist Groups
     group_counts = (df[df['gname'] != 'Unknown']['gname'].value_counts().head(50))  # Exclude 'Unknown' to focus on identified groups
@@ -47,11 +49,10 @@ def plot_top_countries(df):
     ax.set_xlabel("Number of Attacks")
     ax.set_ylabel("Terrorist Organization")
     ax.margins(x=0.01, y=0.01) 
-    pyplot(fig)
 
     return fig
 
-def plot_top_countries(df):
+def plot_average_casualties(df):
 
     # Average casualties
     casualties = df.groupby('attacktype1_txt')['total_casualties'].mean().sort_values(ascending=False).head(10)
@@ -60,12 +61,11 @@ def plot_top_countries(df):
     ax.set_title("Average Casualties per Attack Type")
     ax.set_xlabel("Average Casualties")
     ax.set_ylabel("Attack Type")
-    st.pyplot(fig)
 
     return fig
 
 
-def plot_top_countries(df):
+def plot_regional_trends(df):
         
     # Regional trends
     trends = df.groupby(['iyear', 'region_txt']).size().unstack(fill_value=0)
@@ -74,18 +74,16 @@ def plot_top_countries(df):
     ax.set_title("Regional Terrorism Trends (1970–2020)")
     ax.set_xlabel("Year")
     ax.set_ylabel("Number of Attacks")
-    st.pyplot(fig)
 
     return fig
 
 
-def plot_top_countries(df):
+def plot_correlation_heatmap(df):
         
     # Correlation heatmap
     fig, ax = plt.subplots(figsize=(8, 5))
     sns.heatmap(df[['nkill', 'nwound', 'total_casualties']].corr(),annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
     ax.set_title("Correlation Between Casualty Variables")
-    st.pyplot(fig)
 
     return fig
 
@@ -130,7 +128,6 @@ def plot_weapon_distribution(df):
     )
 
     plt.tight_layout()
-    pyplot(fig)
 
     return fig
    
