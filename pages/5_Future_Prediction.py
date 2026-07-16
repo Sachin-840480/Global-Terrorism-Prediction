@@ -79,7 +79,7 @@ st.markdown(f"### 🌍 Severity Risk Map — {future_year}")
 st.components.v1.html(fmap._repr_html_(),height=650,)
 
 # ================================================================
-# Download
+# Download Map
 # ================================================================
 
 EXPORT_MAP_DIR.mkdir(parents=True, exist_ok=True)
@@ -93,8 +93,19 @@ with open(out_path, "rb") as f:
 # Prediction Table
 # ================================================================
 
-st.markdown("### Predicted Events")
-st.dataframe(pred_df[["country_txt","attacktype1_txt","latitude","longitude","predicted_casualties",]].head(15),use_container_width=True,)
+st.markdown(f"### 📋 Predicted Events ({len(pred_df):,} Samples)")
+display_cols = ["country_txt","attacktype1_txt","latitude","longitude","predicted_casualties",]
+
+# Show only the first 15 predictions
+st.dataframe(pred_df[display_cols].head(15),use_container_width=True,)
+st.caption(f"Showing the first 15 predictions out of {len(pred_df):,} generated events.")
+
+# ================================================================
+# Download Prediction Dataset
+# ================================================================
+
+csv = pred_df.to_csv(index=False).encode("utf-8")
+st.download_button(label="⬇️ Download Complete Prediction Dataset (CSV)",data=csv,file_name=f"terrorism_predictions_{future_year}_{len(pred_df)}_samples.csv",mime="text/csv",)
 
 # Footer
 page_footer()
