@@ -5,3 +5,6 @@ model/xgb_gtd_model2.json
 *.ps1
 *.html
 __pycache__
+
+start_servers.bat
+start_streamlit.ps1
