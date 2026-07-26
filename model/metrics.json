@@ -1,4 +1,7 @@
 {
+    "model_name": "XGBoost Regressor",
+    "algorithm": "XGBoost",
     "r2": 0.4975977224876177,
-    "mae": 3.4099949593754064
+    "mae": 3.4099949593754064,
+    "num_features": 19
 }
