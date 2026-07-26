@@ -255,18 +255,24 @@ with col1:
     st.info("📂\n\n**Global Terrorism Database**")
 
 with col2:
-    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+    st.markdown("""<div style="text-align:center;font-size:42px;font-weight:bold;color:#444;margin:8px 0;">
+        ➡
+    </div>""",unsafe_allow_html=True,)
 
 with col3:
     st.info("⚙️\n\n**Feature Engineering**")
 
 with col4:
-    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+    st.markdown("""<div style="text-align:center;font-size:42px;font-weight:bold;color:#444;margin:8px 0;">
+        ➡
+    </div>""",unsafe_allow_html=True,)
 
 with col5:
     st.info("🧠\n\n**XGBoost Model**")
 
-st.markdown("<h2 style='text-align:center;'>⬇️</h2>", unsafe_allow_html=True)
+    st.markdown("""<div style="text-align:center;font-size:42px;font-weight:bold;color:#444;margin:8px 0;">
+        ⬇
+    </div>""",unsafe_allow_html=True,)
 
 col1, col2, col3 = st.columns([2, 0.5, 2])
 
@@ -274,7 +280,9 @@ with col1:
     st.success("🌍\n\n**Future Prediction**")
 
 with col2:
-    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+    st.markdown("""<div style="text-align:center;font-size:42px;font-weight:bold;color:#444;margin:8px 0;">
+        ➡
+    </div>""",unsafe_allow_html=True,)
 
 with col3:
     st.warning("🔍\n\n**SHAP Explainability**")
