@@ -379,19 +379,17 @@ st.divider()
 
 st.subheader("⚙️ Project Workflow")
 
-st.markdown("""Historical GTD Dataset
-│
-▼
-Feature Engineering
-│
-▼
-Optimized XGBoost Model
-│
-▼
-Future Terrorism Severity Prediction
-│
-▼
-SHAP Explainability""")
+st.markdown("""
+📂 GTD Dataset
+      ↓
+⚙️ Feature Engineering
+      ↓
+🧠 XGBoost Model
+      ↓
+🌍 Future Prediction
+      ↓
+🔍 SHAP Explainability
+""")
 
 st.divider()
 
