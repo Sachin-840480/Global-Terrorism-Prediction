@@ -2,6 +2,7 @@ import streamlit as st
 
 from src.utils.cache import get_data
 from src.utils.plot_style import configure_plot_style
+from src.utils.model_metadata import load_model_metadata
 
 # ================================================================
 # Page Configuration
@@ -64,33 +65,37 @@ st.divider()
 # Model Highlights
 # ================================================================
 
+info = load_model_metadata()
+
 st.subheader("📈 Model Highlights")
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric(
-        "🎯 Model Accuracy (R²)",
-        "54.32%"
+        "🎯 R² Score",
+        f"{info['r2']:.2%}"
     )
 
 with col2:
     st.metric(
-        "📉 Mean Absolute Error",
-        "3.41"
+        "📉 MAE",
+        f"{info['mae']:.2f}"
     )
 
 with col3:
     st.metric(
-        "🌍 Terrorism Incidents",
-        f"{len(df):,}"
+        "🤖 Model",
+        info["model_name"]
     )
 
 with col4:
     st.metric(
-        "🧩 Engineered Features",
-        "25"
+        "🧩 Features",
+        info["num_features"]
     )
+
+st.divider()
 
 # ================================================================
 # Dataset Summary
