@@ -1,7 +1,7 @@
 import json
-from pathlib import Path
 
-MODEL_DIR = Path("model")
+from src.config import METRICS_PATH
 
-with open(MODEL_DIR / "metrics.json", "r") as f:
-    MODEL_INFO = json.load(f)
+def load_model_metadata():
+    with open(METRICS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
