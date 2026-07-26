@@ -377,19 +377,41 @@ st.divider()
 # Workflow
 # ================================================================
 
+# ================================================================
+# Workflow
+# ================================================================
+
 st.subheader("⚙️ Project Workflow")
 
-st.markdown("""
-📂 GTD Dataset
-      ↓
-⚙️ Feature Engineering
-      ↓
-🧠 XGBoost Model
-      ↓
-🌍 Future Prediction
-      ↓
-🔍 SHAP Explainability
-""")
+col1, col2, col3, col4, col5 = st.columns([2, 0.5, 2, 0.5, 2])
+
+with col1:
+    st.info("📂\n\n**Global Terrorism Database**")
+
+with col2:
+    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+
+with col3:
+    st.info("⚙️\n\n**Feature Engineering**")
+
+with col4:
+    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+
+with col5:
+    st.info("🧠\n\n**XGBoost Model**")
+
+st.markdown("<h2 style='text-align:center;'>⬇️</h2>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns([2, 0.5, 2])
+
+with col1:
+    st.success("🌍\n\n**Future Prediction**")
+
+with col2:
+    st.markdown("<h2 style='text-align:center;'>➡️</h2>", unsafe_allow_html=True)
+
+with col3:
+    st.warning("🔍\n\n**SHAP Explainability**")
 
 st.divider()
 
