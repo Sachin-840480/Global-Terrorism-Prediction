@@ -5,9 +5,12 @@ import traceback
 import numpy as np
 import pandas as pd
 
+from datetime import datetime
+
 from sklearn.metrics import (
     r2_score,
     mean_absolute_error,
+    mean_squared_error,
     accuracy_score,
     precision_score,
     recall_score,
@@ -142,6 +145,8 @@ def train_xgboost_cpu(df):
     pred = model.predict(X_test)
     r2 = r2_score(y_test, pred)
     mae = mean_absolute_error(np.expm1(y_test), np.expm1(pred))
+    rmse = np.sqrt(mean_squared_error(np.expm1(y_test), np.expm1(pred)))
+    mse = mean_squared_error(np.expm1(y_test), np.expm1(pred))
 
     # ============================================================
     # OPTIONAL METRIC BLOCK (FOR PPT / DOCUMENTATION) — KEEP COMMENTED
@@ -178,13 +183,38 @@ def train_xgboost_cpu(df):
     # -------------------------------------------------
     # 5. SAVE THE MODEL
     # -------------------------------------------------
+    
     os.makedirs(MODEL_DIR, exist_ok=True)
     model.save_model(MODEL_PATH) 
 
     # Save metrics for the saved model.
-    metrics = {"r2": float(r2), "mae": float(mae)}
+    metrics = {
+    "model_name": model.__class__.__name__,
+    "algorithm": "XGBoost",
+    "version": "1.0",
+
+    "r2": float(r2),
+    "mae": float(mae),
+    "rmse": float(rmse),
+    "mse": float(mse),
+
+    "dataset_size": int(len(df)),
+    "train_samples": int(len(X_train)),
+    "test_samples": int(len(X_test)),
+
+    "num_features": len(features),
+    "feature_names": features,
+
+    "training_years": f"{df['iyear'].min()}-{df['iyear'].max()}",
+    "train_period": "≤ 2016",
+    "test_period": "> 2017",
+
+    "last_trained": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
     with open(METRICS_PATH, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=4)
+
 
     # Save model + features
     with open(FEATURES_PATH, "w", encoding="utf-8") as f:
