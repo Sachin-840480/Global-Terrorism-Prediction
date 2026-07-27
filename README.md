@@ -1,7 +1,6 @@
 # Global-Terrorism-Prediction
 
-## Link:- 
-https://global-terrorism-prediction.streamlit.app/
+## Link:- https://global-terrorism-prediction.streamlit.app/
 
 ---
 
