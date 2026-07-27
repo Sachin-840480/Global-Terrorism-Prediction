@@ -1,5 +1,8 @@
 # Global-Terrorism-Prediction
 
+## Link:- 
+https://global-terrorism-prediction.streamlit.app/
+
 ---
 
 # Inside your .venv terminal for this project, run:
