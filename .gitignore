@@ -8,6 +8,15 @@ model/xgb_gtd_model2.json
 # ignore png files in exports/benchmark
 exports/benchmark/*.png
 
+# ignore all json files in benchmark expect only 1.
+benchmark/*.json
+
+# Track only this file in benchmark.
+!benchmark/benchmark_history.json
+
+# ignore all models in experiments
+experiments/
+
 # ignore scripts files
 *.bat
 *.ps1
