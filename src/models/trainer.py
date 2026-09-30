@@ -19,49 +19,50 @@ from sklearn.metrics import (
 
 from xgboost import XGBRegressor
 
-from src.config import (
-    MODEL_DIR,
-    MODEL_PATH,
-    FEATURES_PATH,
-    METRICS_PATH,
-)
+from src.config import MODEL_DIR
 
 from src.data.preprocessing import engineer_features
-
+from src.data.features import ALL_FEATURES
 
 # ================================================================
 # Model Training — XGBoost Regressor
 # ================================================================
 
-def train_xgboost_cpu(df):
+def train_xgboost_cpu(df, output_dir=MODEL_DIR, model_name="xgb_gtd_model.json"):
     """
     Optimized CPU-only XGBoost training.
     Saves model to disk for future runs.
     """
 
-    os.makedirs(MODEL_DIR, exist_ok=True)
+    output_dir = os.fspath(output_dir)
+
+    model_path = os.path.join(output_dir, model_name)
+    features_path = os.path.join(output_dir, "features.txt")
+    metrics_path = os.path.join(output_dir, "metrics.json")
+
+    os.makedirs(output_dir, exist_ok=True)
 
     # -------------------------------------------------
     # 0. If model already exists -> Load instead of train
     # -------------------------------------------------
-    if os.path.exists(MODEL_PATH):
+    if os.path.exists(model_path):
         try:
             model = XGBRegressor()
-            model.load_model(MODEL_PATH)
+            model.load_model(model_path)
             print("⚡ Loaded saved model from disk.")
 
             features = None
 
             # always load the saved features
-            if os.path.exists(FEATURES_PATH):
-                with open(FEATURES_PATH, "r", encoding="utf-8") as f:
+            if os.path.exists(features_path):
+                with open(features_path, "r", encoding="utf-8") as f:
                     features = [line.strip() for line in f.readlines() if line.strip()]
 
             loaded_r2 = None
             loaded_mae = None
 
-            if os.path.exists(METRICS_PATH):
-                with open(METRICS_PATH, "r", encoding="utf-8") as f:
+            if os.path.exists(metrics_path):
+                with open(metrics_path, "r", encoding="utf-8") as f:
                     m = json.load(f)
                     loaded_r2 = m.get("r2")
                     loaded_mae = m.get("mae")
@@ -83,16 +84,9 @@ def train_xgboost_cpu(df):
     # -------------------------------------------------
     # 2. Split
     # -------------------------------------------------
-    features = [
-        "iyear","imonth",
-        "region_freq","country_freq","attacktype1_freq",
-        "targtype1_freq","weaptype1_freq",
-        "success","region_attack_freq",
-        "region_cat","country_cat","attacktype1_cat",
-        "targtype1_cat","weaptype1_cat",
-        "region_mean","attack_mean","country_mean",
-        "year_trend","country_5yr_mean"
-    ]
+
+    # Import features from the features.py file.
+    features = ALL_FEATURES 
 
     train_mask = D["iyear"] <= 2018
 
@@ -132,6 +126,24 @@ def train_xgboost_cpu(df):
         random_state=42,
         verbosity=0
     )
+
+
+    # model = XGBRegressor(
+    #         n_estimators=2500,
+    #         learning_rate=0.01,
+    #         max_depth=8,
+    #         min_child_weight=5,          # Prevents creating splits for single outlier events
+    #         subsample=0.8,
+    #         colsample_bytree=0.8,
+    #         reg_lambda=2.0,              # Increased L2 regularization to combat overfitting
+    #         reg_alpha=0.5,               # Increased L1 regularization 
+    #         objective="reg:pseudohubererror", # MASSIVE FOR OUTLIERS: Less sensitive to extreme casualty counts than squarederror
+    #         tree_method="hist",
+    #         n_jobs=n_jobs,
+    #         random_state=42,
+    #         verbosity=0,
+    #         early_stopping_rounds=50     # Stops training if test metrics degrade for 50 rounds
+    # )
 
     model.fit(
         X_train, y_train,
@@ -184,8 +196,8 @@ def train_xgboost_cpu(df):
     # 5. SAVE THE MODEL
     # -------------------------------------------------
     
-    os.makedirs(MODEL_DIR, exist_ok=True)
-    model.save_model(MODEL_PATH) 
+    os.makedirs(output_dir, exist_ok=True)
+    model.save_model(model_path) 
 
     # Save metrics for the saved model.
     metrics = {
@@ -212,18 +224,18 @@ def train_xgboost_cpu(df):
     "last_trained": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
-    with open(METRICS_PATH, "w", encoding="utf-8") as f:
+    with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=4)
 
 
     # Save model + features
-    with open(FEATURES_PATH, "w", encoding="utf-8") as f:
+    with open(features_path, "w", encoding="utf-8") as f:
         for col in features:
             f.write(col + "\n")
 
-    print("💾 Model saved to", MODEL_PATH)
-    print("💾 Metrics saved to metrics.json")
-    print("💾 Features saved to", FEATURES_PATH)
+    print("💾 Model saved to", model_path)
+    print("💾 Metrics saved to", metrics_path)
+    print("💾 Features saved to", features_path)
 
     return model, r2, mae, features
 
