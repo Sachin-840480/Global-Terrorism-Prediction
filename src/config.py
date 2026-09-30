@@ -5,6 +5,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 MODEL_DIR = ROOT / "model"
 EXPORT_DIR = ROOT / "exports"
+EXPERIMENTS_DIR = ROOT / "experiments"
+BENCHMARK_DIR = ROOT / "benchmark"
 
 
 EXPORT_EDA_DIR = EXPORT_DIR / "eda"
@@ -21,6 +23,7 @@ MODEL_PATH = MODEL_DIR / "xgb_gtd_model.json"
 FEATURES_PATH = MODEL_DIR / "features.txt"
 METRICS_PATH = MODEL_DIR / "metrics.json"
 COMPARISON_PATH = MODEL_DIR / "model_comparison.csv"
+BENCHMARK_HISTORY_PATH = BENCHMARK_DIR / "benchmark_history.json"
 
 
 DEFAULT_FUTURE_YEAR = 2026
