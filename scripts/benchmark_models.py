@@ -7,6 +7,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import shap
 
 from xgboost import XGBRegressor
 from sklearn.metrics import (
@@ -15,12 +16,15 @@ from sklearn.metrics import (
     mean_squared_error,
 )
 
-from pathlib import Path
-
 from src.data.loader import load_data
 from src.data.preprocessing import engineer_features
-from src.data.features import ALL_FEATURES
-from src.config import BENCHMARK_DIR, BENCHMARK_HISTORY_PATH
+from src.config import BENCHMARK_DIR, BENCHMARK_HISTORY_PATH, EXPORT_BENCHMARK_DIR
+
+from src.visualization.shap import (
+    plot_summary,
+    plot_bar,
+    plot_waterfall,
+)
 
 # ==========================================================
 # PATHS
@@ -48,8 +52,7 @@ print("Model 1:", MODEL1_PATH)
 print("Model 2:", MODEL2_PATH)
 
 # Outputs go here
-ROOT = Path(__file__).resolve().parents[1]
-EXPORT_DIR = ROOT / "exports" / "benchmark"
+EXPORT_DIR = EXPORT_BENCHMARK_DIR
 EXPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================================
@@ -60,11 +63,7 @@ df = load_data()
 
 D = engineer_features(df)
 
-features = ALL_FEATURES
-
 train_mask = D["iyear"] <= 2018
-
-X_test = D.loc[~train_mask, features]
 
 # Keep target on log scale (same as dashboard)
 y_test = D.loc[~train_mask, "log_casualties"]
@@ -112,37 +111,21 @@ def evaluate(model_path):
     # ==========================================================
 
     plt.figure(figsize=(8,6))
-
-    plt.scatter(
-        y_actual,
-        pred_actual,
-        alpha=0.30,
-        edgecolor="black",
-        linewidth=0.3
-    )
-
+    plt.scatter(y_actual, pred_actual, alpha=0.30, edgecolor="black", linewidth=0.3)
+    
     m = max(y_actual.max(), pred_actual.max())
 
     plt.plot(
         [0, m],
-        [0, m],
-        color="red",
-        linewidth=2
-    )
+        [0, m], color="red", linewidth=2)
 
     plt.xlabel("Actual Casualties")
     plt.ylabel("Predicted Casualties")
     plt.title(f"Actual vs Predicted\n{model_name}")
 
     plt.grid(alpha=0.3)
-
     plt.tight_layout()
-
-    plt.savefig(
-        EXPORT_DIR / f"{model_name}_actual_vs_predicted.png",
-        dpi=400,
-        bbox_inches="tight"
-    )
+    plt.savefig(EXPORT_DIR / f"{model_name}_actual_vs_predicted.png", dpi=400, bbox_inches="tight")
 
     plt.close()
 
@@ -153,49 +136,29 @@ def evaluate(model_path):
     residuals = y_actual - pred_actual
 
     plt.figure(figsize=(8,6))
-
-    plt.scatter(
-        pred_actual,
-        residuals,
-        alpha=0.30,
-        edgecolor="black",
-        linewidth=0.3
-    )
-
-    plt.axhline(
-        0,
-        color="red",
-        linestyle="--",
-        linewidth=2
-    )
+    plt.scatter(pred_actual, residuals, alpha=0.30, edgecolor="black", linewidth=0.3)
+    plt.axhline(0, color="red", linestyle="--", linewidth=2)
 
     plt.xlabel("Predicted Casualties")
     plt.ylabel("Residuals")
     plt.title(f"Residual Plot\n{model_name}")
 
     plt.grid(alpha=0.3)
-
     plt.tight_layout()
-
-    plt.savefig(
-        EXPORT_DIR / f"{model_name}_residual_plot.png",
-        dpi=400,
-        bbox_inches="tight"
-    )
+    plt.savefig(EXPORT_DIR / f"{model_name}_residual_plot.png", dpi=400, bbox_inches="tight" )
 
     plt.close()
 
-    return pred_actual, r2, mae, rmse, len(model_features)
-
+    return (model, X_model, pred_actual, r2, mae, rmse, len(model_features))
 
 
 # ==========================================================
 # RUN
 # ==========================================================
 
-pred1, r2_model1, mae_model1, rmse_model1, features_model1 = evaluate(MODEL1_PATH)
+(model1, X_model1, pred1, r2_model1, mae_model1, rmse_model1, features_model1) = evaluate(MODEL1_PATH)
 
-pred2, r2_model2, mae_model2, rmse_model2, features_model2 = evaluate(MODEL2_PATH)
+(model2, X_model2, pred2, r2_model2, mae_model2, rmse_model2, features_model2) = evaluate(MODEL2_PATH)
 
 results = pd.DataFrame([
     {
@@ -211,6 +174,9 @@ results = pd.DataFrame([
         "RMSE": rmse_model2
     }
 ])
+
+# Choose the better model.
+better_model = results.loc[results["R2"].idxmax(), "Model"]
 
 # ==========================================================
 # SAVE BENCHMARK HISTORY
@@ -231,7 +197,7 @@ if HISTORY_PATH.exists():
             history = []
 
     except (json.JSONDecodeError, OSError):
-        # Empty or invalid history file
+        print("Warning: benchmark_history.json is invalid. Starting new history.")
         history = []
 else:
     history = []
@@ -281,6 +247,78 @@ print("Model Comparison")
 print("=" * 65)
 print(results.to_string(index=False))
 
-better_model = results.loc[results["R2"].idxmax(), "Model"]
-
 print(f"\nBest Model : {better_model}")
+
+
+# ==========================================================
+# SHAP ANALYSIS — BEST MODEL
+# ==========================================================
+
+print("\n" + "=" * 65)
+print("SHAP Analysis")
+print("=" * 65)
+
+# ----------------------------------------------------------
+# Select already-loaded best model
+# ----------------------------------------------------------
+
+if MODEL1_PATH.name == better_model:
+    best_model = model1
+    best_X = X_model1
+else:
+    best_model = model2
+    best_X = X_model2
+
+
+best_model_name = Path(better_model).stem
+
+print(f"Generating SHAP plots for: {better_model}")
+
+# ----------------------------------------------------------
+# SHAP sample & Explainer
+# ----------------------------------------------------------
+
+X_shap = best_X.sample(min(1000, len(best_X)),random_state=42)
+
+explainer = shap.TreeExplainer(best_model)
+shap_values = explainer.shap_values(X_shap)
+
+# ----------------------------------------------------------
+# SHAP Summary Plot
+# ----------------------------------------------------------
+
+fig = plot_summary(shap_values,X_shap)
+fig.savefig(EXPORT_DIR / f"{best_model_name}_shap_summary.png",dpi=400,bbox_inches="tight")
+plt.close(fig)
+
+# ----------------------------------------------------------
+# SHAP Bar Plot
+# ----------------------------------------------------------
+
+fig = plot_bar(shap_values,X_shap)
+fig.savefig(EXPORT_DIR / f"{best_model_name}_shap_bar.png",dpi=400,bbox_inches="tight")
+plt.close(fig)
+
+# ----------------------------------------------------------
+# SHAP Waterfall Plot
+# ----------------------------------------------------------
+
+fig = plot_waterfall(explainer,shap_values,X_shap,sample=0)
+fig.savefig(EXPORT_DIR / f"{best_model_name}_shap_waterfall.png",dpi=400,bbox_inches="tight")
+plt.close(fig)
+
+# ----------------------------------------------------------
+# SHAP Feature Importance
+# ----------------------------------------------------------
+
+importance = pd.DataFrame({"Feature": X_shap.columns,"Mean |SHAP|": np.abs(shap_values).mean(axis=0)})
+importance = (importance.sort_values(by="Mean |SHAP|",ascending=False).reset_index(drop=True))
+importance.insert(0,"Rank",range(1, len(importance) + 1))
+importance.to_csv(EXPORT_DIR / f"{best_model_name}_shap_importance.csv",index=False)
+
+print("\nSHAP analysis completed.")
+
+print(f"Summary plot: {best_model_name}_shap_summary.png")
+print(f"Bar plot: {best_model_name}_shap_bar.png")
+print(f"Waterfall: {best_model_name}_shap_waterfall.png")
+print(f"Importance: {best_model_name}_shap_importance.csv")
